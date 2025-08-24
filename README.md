@@ -1,6 +1,6 @@
 # Coffee_Sales_DataAnalysis_MSExcel
 
-### 1) Introduction
+## 1) Introduction
 This project is about turning raw coffee sales data into a clean, interactive Excel dashboard. I built it end-to-end—starting with data cleaning and lookups, then adding calculated fields, and finally creating PivotTables, charts, and slicers for interactivity.
 The final dashboard shows:
 - **Sales trends over time** by coffee type (line chart)  
@@ -9,26 +9,6 @@ The final dashboard shows:
 - **Interactive controls**: timeline (Order Date) and slicers (Roast Type, Size, Loyalty Card)
   
 The goal was to practice real analyst workflows—data prep, modeling, and visualization—and to show how advanced Excel can deliver quick, self-serve insights for stakeholders.
-
-## 1) Introduction  
-When I started this project, the dataset was just raw coffee sales records—numbers and codes scattered across different sheets. My goal was to turn that into something clear, interactive, and useful, the way a data analyst would in a real business setting.  
-I walked through the entire process step by step: cleaning and organizing the data, pulling in customer and product details with lookups, creating calculated fields like Sales, and then shaping it all into PivotTables and charts. Piece by piece, those tables became a dashboard that tells a story instead of just showing rows of data. 
-
-The final dashboard gives stakeholders exactly what they’d need:  
-- Sales trends over time, broken down by coffee type  
-- A clear comparison of sales by country  
-- The top customers who drive revenue  
-- Easy interactive filters (timeline and slicers) so anyone can explore the data without touching formulas  
-
-What started as a raw dataset is now a self-serve reporting tool—something managers could use to spot seasonality, track product mix, or focus on key customers. For me, the real outcome was proving that Excel, when used thoughtfully, can go beyond spreadsheets and become a powerful analytics tool. And it showed me how much I enjoy that process of turning messy data into insights that actually matter.  
-
-
-
-
-
-
-
-
 
 ## 2) Data Model & Sources  
 
@@ -57,10 +37,11 @@ I pulled **Name**, **Email**, and **Country** from the Customers table into the 
 ```excel
 = XLOOKUP([@CustomerID], Customers[CustomerID], Customers[CustomerName], "", 0)  
 = XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)  
-= XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Country], "", 0)  
+= XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Country], "", 0) ``` 
 For Email, I wrapped the formula in an IF to avoid showing 0 when no email was available:
+```excel
 = IF(XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)=0, "", 
-     XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0))
+     XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)) ```
 
 Why XLOOKUP?
 It uses exact match by default, which prevents mistakes.
@@ -71,10 +52,10 @@ It has an optional “if not found” argument, which makes the formula more rob
 ### 3.2 Product attributes with a dynamic INDEX/MATCH
 
 For product details like Coffee Type, Roast Type, Size, and Unit Price, I used a single INDEX/MATCH formula that could be filled across and down:
-
+```excel
 = INDEX(Products!$A$1:$H$999,
         MATCH($D2, Products!$A$1:$A$999, 0),
-        MATCH(I$1, Products!$A$1:$H$1, 0))
+        MATCH(I$1, Products!$A$1:$H$1, 0)) ```
 
 $D2 → Product ID in the current row (row relative, column locked).
 I$1 → Column header above (row locked, column relative), so dragging right automatically switches to the correct attribute.
@@ -87,20 +68,22 @@ It’s more flexible than VLOOKUP because it doesn’t break if columns are inse
 
 ### 4.1 Sales  
 ```excel
-=[@UnitPrice] * [@Quantity]
+=[@UnitPrice] * [@Quantity] ```
 Why: A simple, explicit measure for Pivots and charts. Keeps the “business math” in the model instead of embedding it in visuals.
 
 ### 4.2 Renaming (for better readibility)
 Coffee Type Name from short codes (ROB, EXE, ARA, LIB) using nested IF:
+```excel
 =IF([@[CoffeeType]]="ROB","Robusta",
  IF([@[CoffeeType]]="EXE","Excelsa",
  IF([@[CoffeeType]]="ARA","Arabica",
- IF([@[CoffeeType]]="LIB","Liberica",""))))
+ IF([@[CoffeeType]]="LIB","Liberica","")))) ```
 
 Roast Type Name from M/L/D → Medium/Light/Dark:
+```excel
 =IF([@[RoastType]]="M","Medium",
  IF([@[RoastType]]="L","Light",
- IF([@[RoastType]]="D","Dark","")))
+ IF([@[RoastType]]="D","Dark","")))  ```
 Why: Improves readability in the UI (legends, slicers) so stakeholders don’t need a codebook.
 
 ### 4.3 Loyalty Card (Late-Added Field)
@@ -117,7 +100,7 @@ Currency: Formatted Unit Price and Sales as USD (no decimals in Pivots)inorder t
 
 Duplicates: Used Data → Remove Duplicates on the Orders table to ensures accuracy before analysis and avoids double-counted sales.
 
-Convert range → Table (Ctrl+T) and named it Orders.
+Convert range into Table and named it Orders.
 Why: Tables auto-expand, simplify formulas ([@Col]), and make Pivots refresh reliably.
 
 ## 6) Analysis Model & Visuals 
@@ -138,7 +121,7 @@ Sort: By value to show top country first (adjusted for bar orientation)
 Chart: Bar with data labels outside, series borders for emphasis, consistent color theme.
 Why: Quick geographic performance comparison; highlights “where to focus.”
 
-6.3 Top 5 Customers (Bar Chart)
+### 6.3 Top 5 Customers (Bar Chart)
 Pivot setup:
 Rows: Customer Name
 Values: Sum of Sales
@@ -154,12 +137,12 @@ Inserted Timeline tied to Order Date.
 Applied custom style (purple theme, white text).
 Why: Makes date selection faster and more intuitive than filter dropdowns.
 
-7.2 Slicers
+### 7.2 Slicers
 Added slicers for: Roast Type Name, Size, Loyalty Card.
 Applied custom styles and adjusted layouts (e.g., Size = 2×2, Roast = 1×3).
 Why: Button-based filters are dashboard-friendly—easy for non-technical users.
 
-7.3 Report Connections
+### 7.3 Report Connections
 Connected the Timeline and all Slicers to all three PivotTables via Report Connections.
 Why: Keeps all visuals in sync—true dashboard behavior.
 
@@ -170,7 +153,7 @@ Building calculated columns like Sales and human-readable names taught me the va
 
 The biggest takeaway came when I built PivotTables and connected them with slicers and a timeline. Suddenly the dataset turned into an interactive dashboard where stakeholders could slice results by roast, size, or loyalty card in seconds. That’s when I realized how powerful Excel can be as a self-service analytics tool, not just for number crunching.  
 
-By the end, I not only had a polished dashboard but also a story: how raw transactions can become insights about seasonality, customer concentration, or product mix. This mirrors the real-world workflow of a data analyst—cleaning, modeling, analyzing, and finally communicating results in a way others can act on.
+By the end, I not only had a polished dashboard but also a story: how raw orders can become insights about seasonality, customer concentration, or product mix. This mirrors the real-world workflow of a data analyst—cleaning, modeling, analyzing, and finally communicating results in a way others can act on.
 
 
 *From raw rows to real insights—that’s how this project turned a simple dataset into a story worth telling.*  
