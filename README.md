@@ -150,8 +150,7 @@ The biggest takeaway came when I built PivotTables and connected them with slice
 
 By the end, I not only had a polished dashboard but also a story: how raw orders can become insights about seasonality, customer concentration, or product mix. This mirrors the real-world workflow of a data analyst—cleaning, modeling, analyzing, and finally communicating results in a way others can act on.
 
-
-*From raw rows to real insights—that’s how this project turned a simple dataset into a story worth telling.*  
+ 
 
 
 
