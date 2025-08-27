@@ -33,15 +33,13 @@ To populate the Orders table with customer and product details, I used modern lo
 
 ### 3.1 Customer attributes with XLOOKUP  
 I pulled **Name**, **Email**, and **Country** from the Customers table into the Orders sheet using `XLOOKUP`:  
-
-```excel
 = XLOOKUP([@CustomerID], Customers[CustomerID], Customers[CustomerName], "", 0)  
 = XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)  
 = XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Country], "", 0) ``` 
 For Email, I wrapped the formula in an IF to avoid showing 0 when no email was available:
-```excel
+
 = IF(XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)=0, "", 
-     XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0)) ```
+     XLOOKUP([@CustomerID], Customers[CustomerID], Customers[Email], "", 0))
 
 Why XLOOKUP?
 It uses exact match by default, which prevents mistakes.
@@ -52,10 +50,9 @@ It has an optional “if not found” argument, which makes the formula more rob
 ### 3.2 Product attributes with a dynamic INDEX/MATCH
 
 For product details like Coffee Type, Roast Type, Size, and Unit Price, I used a single INDEX/MATCH formula that could be filled across and down:
-```excel
 = INDEX(Products!$A$1:$H$999,
         MATCH($D2, Products!$A$1:$A$999, 0),
-        MATCH(I$1, Products!$A$1:$H$1, 0)) ```
+        MATCH(I$1, Products!$A$1:$H$1, 0)) 
 
 $D2 → Product ID in the current row (row relative, column locked).
 I$1 → Column header above (row locked, column relative), so dragging right automatically switches to the correct attribute.
@@ -67,23 +64,21 @@ It’s more flexible than VLOOKUP because it doesn’t break if columns are inse
 ## 4) New Calculated Columns (How & Why)  
 
 ### 4.1 Sales  
-```excel
-=[@UnitPrice] * [@Quantity] ```
+=[@UnitPrice] * [@Quantity]
 Why: A simple, explicit measure for Pivots and charts. Keeps the “business math” in the model instead of embedding it in visuals.
 
 ### 4.2 Renaming (for better readibility)
 Coffee Type Name from short codes (ROB, EXE, ARA, LIB) using nested IF:
-```excel
+
 =IF([@[CoffeeType]]="ROB","Robusta",
  IF([@[CoffeeType]]="EXE","Excelsa",
  IF([@[CoffeeType]]="ARA","Arabica",
- IF([@[CoffeeType]]="LIB","Liberica","")))) ```
+ IF([@[CoffeeType]]="LIB","Liberica",""))))
 
 Roast Type Name from M/L/D → Medium/Light/Dark:
-```excel
 =IF([@[RoastType]]="M","Medium",
  IF([@[RoastType]]="L","Light",
- IF([@[RoastType]]="D","Dark","")))  ```
+ IF([@[RoastType]]="D","Dark",""))) 
 Why: Improves readability in the UI (legends, slicers) so stakeholders don’t need a codebook.
 
 ### 4.3 Loyalty Card (Late-Added Field)
